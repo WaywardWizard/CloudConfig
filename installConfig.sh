@@ -2,11 +2,13 @@
 #
 # Perform a dry run if any additional argument passed
 
-function _i {; echo -e "\e[1;104m ${1}";}	# Information
-function _c {; echo -e "\e[1m \$>> ${1}";}	# Command
-function _n {; echo -e "\e[1m ${1};}		# Notice
-function _g {; echo -3 "\e[1m ${1};}		# Success
-function _f {; echo -3 "\e[1m ${1};}		# Failure
+function _i { echo -e "\e[1;104m ${1}\e[0m";}	# Information
+function _c { echo -e "\e[1m \$>> ${1}\e[0m";}	# Command
+function _n { echo -e "\e[1m ${1}\e[0m";}		# Notice
+function _g { echo -e "\e[1m ${1}\e[0m";}		# Success
+function _f { echo -e "\e[1m ${1}\e[0m";}		# Failure
+
+scriptDir="$(cd "$(dirname $BASH_SOURCE[0])" > /dev/null && pwd)/"
 
 # Make a command inert if dry run. Print the command if inert
 function dryer {
@@ -23,43 +25,49 @@ function quietDryer {
 	dryer "$@" > /dev/null
 }
 
-# Installs to calling users ~/.config, every line of every file 
-# in thisRepo/.config that is not already present. 
+# Copy lines from files in source directory to files of same name in target directory
+# whenever those lines are not already present in the target directory files.
 #
-# Existing lines of files in ~/.config will not be changed.
-# Where a line already exists in ~/.config/* it will be ignored
+# $1 - absolute source directory 
+# $2 - absolute target directory
+#
 function installConfig {
-	# Process configuration srcCfgFilenames
-	for srcCfgFilename in $(ls -A .config)
+
+	([ ${1#/} != $1 ] && [ ! -z $1 ]) || (echo "installConfig: Must get absolute source - got $1" && exit);
+	([ ${2#/} != $2 ] && [ ! -z $2 ]) || (echo "installConfig: Must get absolute target - got $2" && exit);
+
+	targetDir="${2%/}/"
+	sourceDir="${1%/}/"
+
+	echo "Transferring configuration from $sourceDir to $targetDir"
+
+	# Process configuration files in source folder. 
+	for cfgFile in $(find -L ${sourceDir} -maxdepth 1 -type f)
 	do
-		cfgPath="${HOME}/${srcCfgFilename}"
-		srcPath=".config/${srcCfgFilename}"
+		targetFile="${targetDir}$(basename $cfgFile)"
 
 		# Create the cfg if missing
-		if [ ! -a "$cfgPath" ]
+		if ! [ -a "$targetFile" ]
 		then
-			_i "Creating config $cfgPath"
-			dryer touch "$cfgPath"
+			_i "Creating config file $targetFile"
+			dryer touch "$targetFile"
 		fi
 
 		# Add missing configuration lines to srcCfgFilename 
 		while read line
 		do
-			# Only if not present already
-			if [[ ! $(grep -x "$line" "$cfgPath") ]] 
+			if [[ ! "$line" =~ ^\ *$ ]] # Silence empty lines
 			then
-				if [[ ! "$line" =~ ^\ *$ ]]
-				then
-					_i -n "Adding line: "
-					dryer tee -a "$cfgPath" "<<<" "'$line'"
-				else
-					quietDryer tee -a "$cfgPath" "<<<" "'$line'"
-				fi	
+				_i "Adding line: "
+				dryer tee -a "$targetFile" "<<<" "'$line'"
+			else
+				quietDryer tee -a "$targetFile" "<<<" "'$line'"
 			fi
-		done < "$srcPath"
+
+		done <<< "$(grep -Fvf $targetFile $cfgFile )" # Whatever lines are not there
 	done
 }
-
+# CloudConfig
 function run {
 
 	# Dry run if any additional argument passed
@@ -71,17 +79,8 @@ function run {
 
 
 	_i "Installing configuration"
-	installConfig
-	installBashProfile
+	installConfig "${scriptDir}home" $HOME
 	_i "Done..."
 }
 
-		
-function installBashrc {
-	# Relative to the directory of this script
-	scriptDirectory="bashrc"
-	for script in ${BASH_SOURCE[0]})/${scriptDirectory}/*
-	do
-		tee -a ~/.bashrc <<< "source $script"
-	done
-}
+run "$@"
