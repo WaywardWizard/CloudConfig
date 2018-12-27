@@ -13,4 +13,8 @@ set shopt checkwinsize
 set shopt no_empty_cmd_completion
 
 
+alias diff='diff --color=auto '
+alias grep='grep --color=auto '
+alias ls='ls --color=auto '
+
 
