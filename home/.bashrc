@@ -1,7 +1,7 @@
 # Ignore and erase duplicates in history
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=5000
-export HISTIGNORE=ls*;cd*;
+export HISTIGNORE="ls*";"cd*";
 set shopt histappend # append to history dont discard
 
 set shopt cdspell autocd
@@ -11,10 +11,9 @@ set shopt direxpand dirspell
 set shopt checkwinsize
 
 set shopt no_empty_cmd_completion
+setxkbmap -option "caps:swapescape"
 
 
 alias diff='diff --color=auto '
 alias grep='grep --color=auto '
 alias ls='ls --color=auto '
-
-
