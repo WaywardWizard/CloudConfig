@@ -13,6 +13,7 @@ scriptDir="$(cd "$(dirname $BASH_SOURCE[0])" > /dev/null && pwd)/"
 function dryer {
 	if [ -z "$dry" ]
 	then
+		echo "EVAL $@"
 		eval "$@"
 	else
 		_c "$@"
@@ -25,7 +26,7 @@ function quietDryer {
 }
 
 # Copy lines from files in source directory to files of same name in target directory
-# whenever those lines are not already present in the target directory files.
+# whenever those lines are not already present in the target directory files. Preserve ordering.
 #
 # $1 - absolute source directory 
 # $2 - absolute target directory
@@ -52,7 +53,7 @@ function installConfig {
 		if ! [ -a "$targetFile" ]
 		then
 			_i "Creating config file $targetFile"
-			dryer touch "$targetFile"
+			touch "$targetFile"
 		fi
 
 		# Add missing configuration lines to srcCfgFilename 
@@ -61,9 +62,9 @@ function installConfig {
 			if [[ ! "$line" =~ ^\ *$ ]] # Silence empty lines
 			then
 				_i "Adding line: "
-				dryer tee -a "$targetFile" "<<<" "\"$line\""
+				dryer tee -a "$targetFile" "\"<< EOF\n$line\nEOF\"" 
 			else
-				quietDryer tee -a "$targetFile" "<<<" "\"$line\""
+				quietDryer tee -a "$targetFile" "\"<< EOF\n$line\nEOF\""
 			fi
 
 		done <<< "$(diff --changed-group-format='%<' --unchanged-group-format='' $cfgFile $targetFile  )" # Whatever lines are not there
