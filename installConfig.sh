@@ -1,6 +1,5 @@
 #!/bin/bash
-#
-# Perform a dry run if any additional argument passed
+# # Perform a dry run if any additional argument passed
 
 function _i { echo -e "\e[1;104m ${1}\e[0m";}	# Information
 function _c { echo -e "\e[1m \$>> ${1}\e[0m";}	# Command
@@ -44,6 +43,9 @@ function installConfig {
 	# Process configuration files in source folder. 
 	for cfgFile in $(find -L ${sourceDir} -maxdepth 1 -type f)
 	do
+
+		echo "Processing configuration file $cfgFile"
+
 		targetFile="${targetDir}$(basename $cfgFile)"
 
 		# Create the cfg if missing
@@ -59,12 +61,12 @@ function installConfig {
 			if [[ ! "$line" =~ ^\ *$ ]] # Silence empty lines
 			then
 				_i "Adding line: "
-				dryer tee -a "$targetFile" "<<<" "'$line'"
+				dryer tee -a "$targetFile" "<<<" "\"$line\""
 			else
-				quietDryer tee -a "$targetFile" "<<<" "'$line'"
+				quietDryer tee -a "$targetFile" "<<<" "\"$line\""
 			fi
 
-		done <<< "$(grep -Fvf $targetFile $cfgFile )" # Whatever lines are not there
+		done <<< "$(diff --changed-group-format='%<' --unchanged-group-format='' $cfgFile $targetFile  )" # Whatever lines are not there
 	done
 }
 # CloudConfig
