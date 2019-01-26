@@ -13,7 +13,6 @@ scriptDir="$(cd "$(dirname $BASH_SOURCE[0])" > /dev/null && pwd)/"
 function dryer {
 	if [ -z "$dry" ]
 	then
-		echo "EVAL $@"
 		eval "$@"
 	else
 		_c "$@"
