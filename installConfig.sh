@@ -62,6 +62,7 @@ function installConfig {
 			if [[ ! "$line" =~ ^\ *$ ]] # Silence empty lines
 			then
 				_i "Adding line: "
+				# Something wrong here, tee is creating a file with the name of the last argument
 				dryer tee -a "$targetFile" "\"<< EOF\n$line\nEOF\"" 
 			else
 				quietDryer tee -a "$targetFile" "\"<< EOF\n$line\nEOF\""

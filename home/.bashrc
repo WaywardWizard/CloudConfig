@@ -8,11 +8,13 @@ RC[time]="35"
 RC[rootUser]="91"
 RC[user]="92"
 RC[host]="34"
+RC[success]="1"
+RC[fail]="2"
 
 
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=5000
-export HISTIGNORE="ls*:cd*:"
+export HISTIGNORE=""
 set shopt histappend # append to history dont discard
 
 set shopt cdspell autocd
@@ -27,27 +29,27 @@ alias grep='grep --color=auto '
 alias ls='ls --color=auto '
 
 # Command substitution is delayed to exec 
-PS1=' $(lastCommandColourCoded) \e[1;${RC[time]}m\A\e[0m [$(userColour)\u\e[0m|$(hostColour)\h\e[0m \e[1;${RC[dir]}m\w\e[0m]$ '
+PS1=' $(lastCommandColourCoded) \[\e[1;${RC[time]}m\]\A\[\e[0m\] [$(userColour)\u\[\e[0m\]|$(hostColour)\h\[\e[0m\] \[\e[1;${RC[dir]}m\]\w\[\e[0m\]]$ '
 
 userColour() {
 	if [ "$EUID" != "0" ]
 	then
-		echo -e "\e[1m\e[${RC[user]}m"
+		printf "\001\e[1m\e[${RC[user]}m\002"
 	else
-		echo -e "\e[${$RC[rootUser]}m"
+		printf "\001\e[${$RC[rootUser]}m]\002"
 	fi
 }
 
-hostColour() { echo -e "\e[${RC[host]}m"; }
+hostColour() { printf "\001\e[${RC[host]}m\002"; }
 
 lastCommandColourCoded() {
 	RET=$?
 	if (( $? )) 
 	then
 		# Two blanks either side for consistent width
-		echo -e "\e[91m$(printf "%3d" "$RET")\e[0m"
+		printf "\001$(tput setaf ${RC[success]})\002$(printf "%3d" "$RET")\001$(tput sgr0)\002"
 	else 
-		echo -e "\e[92m$(printf "%3s" "\xe2\x9c\x93")\e[0m"
+		printf "\001$(tput setaf ${RC[fail]})\002$(printf "%3s" "\xe2\x9c\x93")\001$(tput sgr0)\002"
 	fi
 }
 	
