@@ -25,6 +25,7 @@ set shopt no_empty_cmd_completion
 alias diff='diff --color=auto '
 alias grep='grep --color=auto '
 alias ls='ls --color=auto '
+alias fd='find . -iname '
 
 # Command substitution is delayed to exec 
 PS1=' $(lastCommandColourCoded) \e[1;${RC[time]}m\A\e[0m [$(userColour)\u\e[0m|$(hostColour)\h\e[0m \e[1;${RC[dir]}m\w\e[0m]$ '
