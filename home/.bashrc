@@ -36,6 +36,8 @@ alias ls='ls --color=always'
 alias pacman='pacman --color=always'
 alias fd='find . -iname '
 
+setxkbmap -option caps:swapescape
+
 # Command substitution is delayed to exec 
 PS1=" \$(lastCommandColourCoded) \[\e[1;${RC[time]}m\]\A\[\e[0m\] [\$(userColour)\u\[\e[0m\]|\$(hostColour)\h\[\e[0m\] \[\e[1;${RC[dir]}m\]\w\[\e[0m\]]$ "
 
