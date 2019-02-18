@@ -31,10 +31,11 @@ set shopt no_empty_cmd_completion
 
 # use \{diff, grep, ls, ..} to get non aliased cmd when piping to files for text processing (when you dont want cntrl chars)
 alias diff='diff --color=always'
-alias grep='grep --color=always'
+alias grep='grep -E --color=always' # Always extended!
 alias ls='ls --color=always'
 alias pacman='pacman --color=always'
-alias fd='find . -iname '
+alias ff='find . -iname '
+alias fp='find . -ipath '
 
 setxkbmap -option caps:swapescape
 

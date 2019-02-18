@@ -9,3 +9,6 @@ set show-all-if-ambiguous
 
 set vi-cmd-mode-string (x)
 set vi-ins-mode-string (>)
+
+"\e[A":history-search-backward
+"\e[B":history-search-forward
