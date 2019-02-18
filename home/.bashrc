@@ -16,6 +16,9 @@ RC[fail]="2"
 export LESSOPEN="| /usr/bin/source-highlight-esc.sh %s"
 export LESS='-R '
 
+# Have vim be the manpager (colouring, super convenient jumping with ctrl-])
+export MANPAGE="vim -M +MANPAGER -"
+
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=5000
 export HISTIGNORE=""
