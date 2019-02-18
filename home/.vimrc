@@ -30,8 +30,8 @@ set so=7
 set encoding=utf8
 set expandtab
 set smarttab
-set shiftwidth 4
-set tabstop 4
+set shiftwidth=4
+set tabstop=4
 
 set foldmethod=indent
 set foldnestmax=10
