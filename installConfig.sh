@@ -59,11 +59,10 @@ function installConfig {
 		do
 			if [[ ! "$line" =~ ^\ *$ ]] # Silence empty lines
 			then
-
 				_i "Adding line: "
-				(dryer tee -a "$targetFile")<<<"$line" 
+				(dryer tee -a "$targetFile")<<<"$line"
 			else
-				quietDryer tee -a "$targetFile" "<<<$line"
+                (quietDryer tee -a "$targetFile")<<<"$line"
 			fi
 
 		done <<< "$(diff --changed-group-format='%<' --unchanged-group-format='' $cfgFile $targetFile  )" # Whatever lines are not there
