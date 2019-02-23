@@ -34,7 +34,6 @@ function installConfig {
 
 	([ ${1#/} != $1 ] && [ ! -z $1 ]) || (echo "installConfig: Must get absolute source - got $1" && exit);
 	([ ${2#/} != $2 ] && [ ! -z $2 ]) || (echo "installConfig: Must get absolute target - got $2" && exit);
-
 	targetDir="${2%/}/"
 	sourceDir="${1%/}/"
 
@@ -60,11 +59,11 @@ function installConfig {
 		do
 			if [[ ! "$line" =~ ^\ *$ ]] # Silence empty lines
 			then
+
 				_i "Adding line: "
-				# Something wrong here, tee is creating a file with the name of the last argument
-				dryer tee -a "$targetFile" "\"<< EOF\n$line\nEOF\"" 
+				(dryer tee -a "$targetFile")<<<"$line" 
 			else
-				quietDryer tee -a "$targetFile" "\"<< EOF\n$line\nEOF\""
+				quietDryer tee -a "$targetFile" "<<<$line"
 			fi
 
 		done <<< "$(diff --changed-group-format='%<' --unchanged-group-format='' $cfgFile $targetFile  )" # Whatever lines are not there
