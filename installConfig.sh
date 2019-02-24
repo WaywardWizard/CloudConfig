@@ -54,8 +54,10 @@ function installConfig {
 			touch "$targetFile"
 		fi
 
-		# Add missing configuration lines to srcCfgFilename 
-		while read line
+        # Add missing configuration lines to srcCfgFilename. -r will ignore backslashes (making text literal) 
+        IFS_OLD=$IFS
+        IFS="" # No trimming of whitespace and read whole line into field
+		while read -r line
 		do
 			if [[ ! "$line" =~ ^\ *$ ]] # Silence empty lines
 			then
@@ -65,10 +67,13 @@ function installConfig {
                 (quietDryer tee -a "$targetFile")<<<"$line"
 			fi
 
-		done <<< "$(diff --changed-group-format='%<' --unchanged-group-format='' $cfgFile $targetFile  )" # Whatever lines are not there
+		done <<<"$(diff --changed-group-format='%<' --unchanged-group-format='' $cfgFile $targetFile )"
+        IFS=$IFS_OLD
+        # No expansion post substitution. 
+
 	done
 }
-# CloudConfig
+
 function run {
 
 	# Dry run if any additional argument passed
