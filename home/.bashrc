@@ -1,3 +1,6 @@
+
+[[ $- != *i* ]] && return
+
 # Ignore and erase duplicates in history
 declare -A RC
 
