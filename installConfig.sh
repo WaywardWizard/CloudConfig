@@ -1,5 +1,6 @@
 #!/bin/bash
 # # Perform a dry run if any additional argument passed
+set -e
 
 function _i { echo -e "\e[1;104m ${1}\e[0m";}	# Information
 function _c { echo -e "\e[1m \$>> ${1}\e[0m";}	# Command
@@ -26,6 +27,9 @@ function quietDryer {
 
 # Copy lines from files in source directory to files of same name in target directory
 # whenever those lines are not already present in the target directory files. Preserve ordering.
+# 
+# Where there are folders in the source directory, copy their content to a folder of the same 
+# name in the target directory. 
 #
 # $1 - absolute source directory 
 # $2 - absolute target directory
@@ -47,13 +51,19 @@ function installConfig {
 
 		targetFile="${targetDir}$(basename $cfgFile)"
 
-		# Create the cfg if missing
+		# Create the cfg if missing. Clobber if configured to 
 		if ! [ -a "$targetFile" ]
 		then
+
+            if [ $clobber = "true" ]; then
+                echo "rm $targetFile"
+                rm "$targetFile"
+            fi
+
 			_i "Creating config file $targetFile"
 			touch "$targetFile"
-		fi
 
+        fi
         # Add missing configuration lines to srcCfgFilename. -r will ignore backslashes (making text literal) 
         IFS_OLD=$IFS
         IFS="" # No trimming of whitespace and read whole line into field
@@ -72,6 +82,15 @@ function installConfig {
         # No expansion post substitution. 
 
 	done
+
+    # Process folders in the source folder (recursively)
+    for cfgFolder in $(find -L ${sourceDir} -maxdepth 1 -mindepth 1 \( -type l -o -type d \))
+    do
+        echo "Processing configuration folder '$cfgFolder'"
+        targetFolder="$2/$(basename $cfgFolder)"
+        if [ ! -e "$targetFolder" ]; then mkdir $targetFolder;fi
+        installConfig "$cfgFolder" "$targetFolder" #Recurse
+    done
 }
 
 function run {
@@ -83,6 +102,12 @@ function run {
 		_i "This is a dry run"
 	fi
 
+    clobber=""
+    if [ ! -z "$2" ]
+    then
+        _i "This shall clobber configuration instead of add to it"
+        clobber="true"
+    fi
 
 	_i "Installing configuration"
 	installConfig "${scriptDir}home" $HOME
