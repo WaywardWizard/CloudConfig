@@ -156,35 +156,29 @@ bar {
         status_command i3status
 }
 
+which amixer > /dev/null && bindsym XF86AudioRaiseVolume exec amixer -q set Master 2dB+ unmute
+which amixer > /dev/null && bindsym XF86AudioLowerVolume exec amixer -q set Master 2dB- unmute 
+which amixer > /dev/null && bindsym XF86AudioMute exec amixer -q set Master toggle
 
-where amixer > /dev/null && {
-    bindsym XF86AudioRaiseVolume exec amixer -q set Master 2dB+ unmute
-    bindsym XF86AudioLowerVolume exec amixer -q set Master 2dB- unmute 
-    bindsym XF86AudioMute exec amixer -q set Master toggle
-}
-
-where xbacklight > /dev/null && {
-    bindsym XF86MonBrightnessUp exec xbacklight -inc 8
-    bindsym XF86MonBrightnessDown exec xbacklight -dec 8
-}
+which xbacklight > /dev/null && bindsym XF86MonBrightnessUp exec xbacklight -inc 8
+which xbacklight > /dev/null && bindsym XF86MonBrightnessDown exec xbacklight -dec 8
 
 # Megasync and netowrk manager applet
 #exec --no-startup-id megasync
-where nm-applet > /dev/null && exec --no-startup-id nm-applet
+which nm-applet > /dev/null && exec --no-startup-id nm-applet
 
 # Messaging client
-where Whatsapp > /dev/null && exec --no-startup-id Whatsapp
+which Whatsapp > /dev/null && exec --no-startup-id Whatsapp
 
 # Wallpapers
-where bgs > /dev/null && exec --no-startup-id bgs ~/Wallpaper/default
+which bgs > /dev/null && exec --no-startup-id bgs ~/Wallpaper/default
 
 # Enable three finger middle button
 #
 exec --no-startup-id ~/.config/i3/enableTouchClick.sh
 exec --no-startup-id setxkbmap -option "caps:swapescape"
-where pasystray > /dev/null && exec --no-startup-id pasystray 
-where blueman-applet >/dev/null && exec --no-startup-id blueman-applet
-where redshift-gtk >/dev/null && exec --no-startup-id redshift-gtk
+which pasystray > /dev/null && exec --no-startup-id pasystray 
+which blueman-applet >/dev/null && exec --no-startup-id blueman-applet
 
 # screenshot binding to prtscn
-where scrot >/dev/null && bindsym XF86Display exec scrot ~/Screenshot/$(date +%F%H:%M:%S).png
+which scrot >/dev/null && bindsym XF86Display exec scrot ~/Screenshot/$(date +%F%H:%M:%S).png

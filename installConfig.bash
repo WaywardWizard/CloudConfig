@@ -5,7 +5,7 @@ set -e
 function _i { echo -e "\e[1;104m ${1}\e[0m";}	# Information
 function _c { echo -e "\e[1m \$>> ${1}\e[0m";}	# Command
 function _n { echo -e "\e[1m ${1}\e[0m";}		# Notice
-function _g { echo -e "\e[1m ${1}\e[0m";}		# Success
+function _s { echo -e "\e[1m ${1}\e[0m";}		# Success
 function _f { echo -e "\e[1m ${1}\e[0m";}		# Failure
 
 scriptDir="$(cd "$(dirname $BASH_SOURCE[0])" > /dev/null && pwd)/"
@@ -36,34 +36,34 @@ function quietDryer {
 #
 function installConfig {
 
-	([ ${1#/} != $1 ] && [ ! -z $1 ]) || (echo "installConfig: Must get absolute source - got $1" && exit);
-	([ ${2#/} != $2 ] && [ ! -z $2 ]) || (echo "installConfig: Must get absolute target - got $2" && exit);
+	([ ${1#/} != $1 ] && [ ! -z $1 ]) || (_f "installConfig: Must get absolute source - got $1" && exit);
+	([ ${2#/} != $2 ] && [ ! -z $2 ]) || (_f "installConfig: Must get absolute target - got $2" && exit);
 	targetDir="${2%/}/"
 	sourceDir="${1%/}/"
 
-	echo "Transferring configuration from $sourceDir to $targetDir"
+    if [ ! -e "$targetDir" ];then dryer mkdir "$targetDir";fi
+
+	_i "Transferring configuration from $sourceDir to $targetDir"
 
 	# Process configuration files in source folder. 
 	for cfgFile in $(find -L ${sourceDir} -maxdepth 1 -type f)
 	do
 
-		echo "Processing configuration file $cfgFile"
+		_i "Processing configuration file $cfgFile"
 
 		targetFile="${targetDir}$(basename $cfgFile)"
 
-		# Create the cfg if missing. Clobber if configured to 
+        # Remove target config file if clobber set
+        if [ $clobber = "true" -a -a "$targetFile" ]; then
+            dryer "rm $targetFile"
+        fi
+
 		if ! [ -a "$targetFile" ]
 		then
-
-            if [ $clobber = "true" ]; then
-                echo "rm $targetFile"
-                rm "$targetFile"
-            fi
-
 			_i "Creating config file $targetFile"
-			touch "$targetFile"
-
+			quietDryer touch "$targetFile"
         fi
+
         # Add missing configuration lines to srcCfgFilename. -r will ignore backslashes (making text literal) 
         IFS_OLD=$IFS
         IFS="" # No trimming of whitespace and read whole line into field
@@ -71,7 +71,6 @@ function installConfig {
 		do
 			if [[ ! "$line" =~ ^\ *$ ]] # Silence empty lines
 			then
-				_i "Adding line: "
 				(dryer tee -a "$targetFile")<<<"$line"
 			else
                 (quietDryer tee -a "$targetFile")<<<"$line"
@@ -86,9 +85,9 @@ function installConfig {
     # Process folders in the source folder (recursively)
     for cfgFolder in $(find -L ${sourceDir} -maxdepth 1 -mindepth 1 \( -type l -o -type d \))
     do
-        echo "Processing configuration folder '$cfgFolder'"
+        _i "Processing configuration folder '$cfgFolder'"
         targetFolder="$2/$(basename $cfgFolder)"
-        if [ ! -e "$targetFolder" ]; then mkdir $targetFolder;fi
+        if [ ! -e "$targetFolder" ]; then dryer mkdir $targetFolder;fi
         installConfig "$cfgFolder" "$targetFolder" #Recurse
     done
 }
