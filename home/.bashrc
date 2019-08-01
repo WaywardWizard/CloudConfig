@@ -1,5 +1,7 @@
-
 [[ $- != *i* ]] && return
+if [ -d $HOME/bin ];then
+    PATH="${PATH}:${HOME}/bin"
+fi
 
 # Ignore and erase duplicates in history
 declare -A RC
@@ -42,6 +44,9 @@ alias ls='ls --color=always'
 alias pacman='pacman --color=always'
 alias ff='find . -iname '
 alias fp='find . -ipath '
+
+alias phpx='XDEBUG_CONFIG="!" php'
+alias phpp='php -d xdebug.profiler_enable=1 '
 
 setxkbmap -option caps:swapescape
 
