@@ -7,7 +7,7 @@ syntax on
 " keyboard when yanking text if no other register is specified. This is 
 " especially useful when you forward you X11 session and ssh into a remote host
 " because it then yanks text to your local hosts Star clipboard
-set clipboard="unnamed"
+set clipboard=unnamed
 
 filetype on
 filetype plugin on
