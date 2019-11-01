@@ -113,5 +113,7 @@ export GTK_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 export QT_IM_MODULE=ibus
 ibus-daemon-drx --panel=/usr/lib/kimpanel-ibus-panel
+
+# kimtoy ibus{,skk} ttf-mona{,po} ttf-ipa-mona otf-ipafont adobe-source-han-sans-{jp,otc}-fonts
 }
 hash ibus && configureEnvIbus
