@@ -108,4 +108,10 @@ if [[ ! "$SSH_AUTH_SOCK" ]];then
 	eval "$(<"$XDG_RUNTIME_DIR/ssh-agent.env")"
 fi
 
-
+configureEnvIbus () {
+export GTK_IM_MODULE=ibus
+export XMODIFIERS=@im=ibus
+export QT_IM_MODULE=ibus
+ibus-daemon-drx --panel=/usr/lib/kimpanel-ibus-panel
+}
+hash ibus && configureEnvIbus
