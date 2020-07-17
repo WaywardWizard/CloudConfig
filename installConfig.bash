@@ -95,22 +95,42 @@ function installConfig {
 function run {
 
 	# Dry run if any additional argument passed
-	if [ ! -z "$1" ]
+	if [ -n "$1" ]
 	then
 		dry=true
 		_i "This is a dry run"
 	fi
 
-    clobber=""
-    if [ ! -z "$2" ]
+    clobber="true"
+    if [ -n "$2" ]
     then
-        _i "This shall clobber configuration instead of add to it"
-        clobber="true"
+        _i "This shall add to configuration instead of clobber it"
+        clobber=""
     fi
 
 	_i "Installing configuration"
-	installConfig "${scriptDir}home" $HOME
+	installConfig "${scriptDir}home" "$HOME"
 	_i "Done..."
 }
+
+function help {
+	cat <<- eof
+	Updates user config directory to be as per cloud config.
+
+	Usage: 
+	$0 <dry run> <clobber>
+
+	Args:
+	<dry run> when non empty (""), report changes only
+	<clobber> Clobber config unless not empty
+	eof
+}
+
+
+
+if (($# == 0)) || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+	help
+	return
+fi
 
 run "$@"
