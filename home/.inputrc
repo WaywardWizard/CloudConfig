@@ -2,6 +2,15 @@
 set blink-matching-paren
 set colored-completion-prefix
 set colored-stats
+
+set completion-ignore-case
+set completion-map-case
+set completion-prefix-display-length 5
+
+set enable-bracketed-paste
+
+set menu-complete-display-prefix
+
 set editing-mode vi
 set horizontal-scroll-mode
 set show-mode-in-prompt
