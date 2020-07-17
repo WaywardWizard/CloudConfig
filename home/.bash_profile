@@ -22,7 +22,10 @@ export LESSOPEN="| /usr/bin/source-highlight-esc.sh %s"
 export LESS='-R '
 
 # Have vim be the manpager (colouring, super convenient jumping with ctrl-])
-export MANPAGE="vim -M +MANPAGER -"
+#export PAGER="nvimpager +':norm gO'"
+
+# Command to open with menu - +':norm gO'  +':exe \"norm \<C-w>L\"' +':exe \"norm 45\<c-w>|\"'" 
+export MANPAGER="nvimpager +':nunmap <buffer> gO' +'nnoremap Q <C-w>b:q<CR>' +'nnoremap <buffer> <silent> gO :call man#show_toc()<CR><C-w>L:vertical res 45<CR><C-w>h' +'nunmap <buffer> j' +'nunmap <buffer> k'"
 
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=5000
@@ -112,8 +115,8 @@ configureEnvIbus () {
 export GTK_IM_MODULE=ibus
 export XMODIFIERS=@im=ibus
 export QT_IM_MODULE=ibus
-ibus-daemon-drx --panel=/usr/lib/kimpanel-ibus-panel
-
+export QT4_IM_MODULE=ibus
+ibus-daemon -drx 
 # kimtoy ibus{,skk} ttf-mona{,po} ttf-ipa-mona otf-ipafont adobe-source-han-sans-{jp,otc}-fonts
 }
 hash ibus && configureEnvIbus
