@@ -31,14 +31,11 @@ export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=5000
 export HISTIGNORE=""
 
-set shopt histappend # append to history dont discard
-
-set shopt cdspell autocd
-set shopt direxpand dirspell
+shopt -s cdspell autocd direxpand dirspell dotglob histappend 
 
 # Resize window after each command
 #set shopt checkwinsize
-set shopt no_empty_cmd_completion
+shopt -s no_empty_cmd_completion
 
 # use \{diff, grep, ls, ..} to get non aliased cmd when piping to files for text processing (when you dont want cntrl chars)
 alias diff='diff --color=auto'
