@@ -24,8 +24,18 @@ export LESS='-R '
 # Have vim be the manpager (colouring, super convenient jumping with ctrl-])
 #export PAGER="nvimpager +':norm gO'"
 
-# Command to open with menu - +':norm gO'  +':exe \"norm \<C-w>L\"' +':exe \"norm 45\<c-w>|\"'" 
-export MANPAGER="nvimpager +':nunmap <buffer> gO' +'nnoremap Q <C-w>b:q<CR>' +'nnoremap <buffer> <silent> gO :call man#show_toc()<CR><C-w>L:vertical res 45<CR><C-w>h' +'nunmap <buffer> j' +'nunmap <buffer> k'"
+# Cannot run these remaps in the .config/nvimpager/init.vim due to precedence of remaps.
+# Invocation of nvim via nvimpager uses "-c <remap>" arguments that are applied after loading init.nvim
+export MANPAGER="nvimpager \
++':nunmap <buffer> j <bar> :nunmap <buffer> k <bar> :nunmap <buffer> K <bar> :nunmap <buffer> J <bar> :nunmap <buffer> gO' \
++':nnoremap <buffer> j <C-E>' \
++':nnoremap <buffer> k <C-Y>' \
++':nnoremap <buffer> J <Down>' \
++':nnoremap <buffer> K <Up>' \
++':nnoremap <buffer> <silent> gO :call man#show_toc()<CR><C-w>L:vertical res 45<CR><C-w>h' \
++':nnoremap <buffer> q <C-w>b<Cmd>q<CR>' \
++':nnoremap <buffer> Q <C-w>q<CR>'
+"
 
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=5000
@@ -44,6 +54,8 @@ alias ls='ls --color=auto'
 alias pacman='pacman --color=auto'
 alias ff='find . -iname '
 alias fp='find . -ipath '
+alias nv='nvim'
+alias cat='ccat'
 
 alias phpx='XDEBUG_CONFIG="!" php'
 alias phpp='php -d xdebug.profiler_enable=1 '
@@ -105,7 +117,7 @@ if ! pgrep -u "$USER" ssh-agent > /dev/null;then
 	ssh-agent > "$XDG_RUNTIME_DIR/ssh-agent.env"
 fi
 if [[ ! "$SSH_AUTH_SOCK" ]];then
-	eval "$(<"$XDG_RUNTIME_DIR/ssh-agent.env")"
+	eval "$(<"$XDG_RUNTIME_DIR/ssh-agent.env")" > /dev/null # Dont echo agent pid
 fi
 
 configureEnvIbus () {
@@ -117,3 +129,5 @@ ibus-daemon -drx
 # kimtoy ibus{,skk} ttf-mona{,po} ttf-ipa-mona otf-ipafont adobe-source-han-sans-{jp,otc}-fonts
 }
 hash ibus && configureEnvIbus
+
+xbindkeys # Daemon to watch key presses
