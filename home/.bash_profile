@@ -32,7 +32,7 @@ export MANPAGER="nvimpager \
 +':nnoremap <buffer> k <C-Y>' \
 +':nnoremap <buffer> J <Down>' \
 +':nnoremap <buffer> K <Up>' \
-+':nnoremap <buffer> <silent> gO :call man#show_toc()<CR><C-w>L:vertical res 45<CR><C-w>h' \
++':nnoremap <buffer> <silent> m :call man#show_toc()<CR><C-w>L:vertical res 45<CR><C-w>h' \
 +':nnoremap <buffer> q <C-w>b<Cmd>q<CR>' \
 +':nnoremap <buffer> Q <C-w>q<CR>'
 "
@@ -41,7 +41,7 @@ export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=5000
 export HISTIGNORE=""
 
-shopt -s cdspell autocd direxpand dirspell dotglob histappend 
+shopt -s cdspell autocd direxpand dirspell dotglob histappend cdable_vars expand_aliases no_empty_cmd_completion 
 
 # Resize window after each command
 #set shopt checkwinsize
