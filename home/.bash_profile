@@ -30,8 +30,8 @@ export MANPAGER="nvimpager \
 +':nunmap <buffer> j <bar> :nunmap <buffer> k <bar> :nunmap <buffer> K <bar> :nunmap <buffer> J <bar> :nunmap <buffer> gO' \
 +':nnoremap <buffer> j <C-E>' \
 +':nnoremap <buffer> k <C-Y>' \
-+':nnoremap <buffer> J <Down>' \
-+':nnoremap <buffer> K <Up>' \
++':nnoremap <buffer> J 10<C-E>' \
++':nnoremap <buffer> K 10<C-Y>' \
 +':nnoremap <buffer> <silent> m :call man#show_toc()<CR><C-w>L:vertical res 45<CR><C-w>h' \
 +':nnoremap <buffer> q <C-w>b<Cmd>q<CR>' \
 +':nnoremap <buffer> Q <C-w>q<CR>'
