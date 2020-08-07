@@ -60,7 +60,6 @@ alias cat='ccat'
 alias phpx='XDEBUG_CONFIG="!" php'
 alias phpp='php -d xdebug.profiler_enable=1 '
 
-setxkbmap -option caps:swapescape
 
 # Command substitution is delayed to exec 
 PS1=" \$(lastCommandColourCoded) \[\e[1;${RC[time]}m\]\A\[\e[0m\] [\$(userColour)\u\[\e[0m\]|\$(hostColour)\h\[\e[0m\] \[\e[1;${RC[dir]}m\]\w\[\e[0m\]]$ "
@@ -113,21 +112,3 @@ man() {
 #	man "$@"
 #}
 
-if ! pgrep -u "$USER" ssh-agent > /dev/null;then
-	ssh-agent > "$XDG_RUNTIME_DIR/ssh-agent.env"
-fi
-if [[ ! "$SSH_AUTH_SOCK" ]];then
-	eval "$(<"$XDG_RUNTIME_DIR/ssh-agent.env")" > /dev/null # Dont echo agent pid
-fi
-
-configureEnvIbus () {
-export GTK_IM_MODULE=ibus
-export XMODIFIERS=@im=ibus
-export QT_IM_MODULE=ibus
-export QT4_IM_MODULE=ibus
-ibus-daemon -drx 
-# kimtoy ibus{,skk} ttf-mona{,po} ttf-ipa-mona otf-ipafont adobe-source-han-sans-{jp,otc}-fonts
-}
-hash ibus && configureEnvIbus
-
-xbindkeys # Daemon to watch key presses
