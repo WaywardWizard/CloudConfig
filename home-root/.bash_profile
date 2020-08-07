@@ -21,7 +21,7 @@ _userColour() {
 	then
 		printf "\001\e[1m\e[${RC[user]}m\002"
 	else
-		printf "\001\e[${$RC[rootUser]}m]\002"
+		printf "\001\e[1m\e${$RC[rootUser]}m]\002"
 	fi
 }
 
