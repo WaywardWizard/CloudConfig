@@ -110,6 +110,8 @@ function run {
 
 	_i "Installing configuration"
 	installConfig "${scriptDir}home" "$HOME"
+	installConfig "${scriptDir}etc" "/etc"
+	installConfig "${scriptDir}home-root" "/root"
 	_i "Done..."
 }
 
@@ -125,8 +127,6 @@ function help {
 	<clobber> Clobber config unless not empty
 	eof
 }
-
-
 
 if (($# == 0)) || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
 	help
