@@ -10,13 +10,16 @@ function _f { echo -e "\e[1m ${1}\e[0m";}		# Failure
 
 scriptDir="$(cd "$(dirname $BASH_SOURCE[0])" > /dev/null && pwd)/"
 
+declare -i DRY_RUN=1
+declare -i CLOBBER=0
+
 # Make a command inert if dry run. Print the command if inert
 function dryer {
-	if [ -z "$dry" ]
+	if (( $DRY_RUN ))
 	then
-		eval "$@"
-	else
 		_c "$@"
+	else
+		eval "$@"
 	fi
 }
 
@@ -33,7 +36,6 @@ function quietDryer {
 #
 # $1 - absolute source directory 
 # $2 - absolute target directory
-#
 function installConfig {
 
 	([ ${1#/} != $1 ] && [ ! -z $1 ]) || (_f "installConfig: Must get absolute source - got $1" && exit);
@@ -54,7 +56,7 @@ function installConfig {
 		targetFile="${targetDir}$(basename $cfgFile)"
 
         # Remove target config file if clobber set
-        if [[ $clobber == "true" ]] && [[ -e "$targetFile" ]]; then
+	if (( CLOBBER )) && [[ -e "$targetFile" ]]; then
             dryer "rm $targetFile"
         fi
 
@@ -95,18 +97,8 @@ function installConfig {
 function run {
 
 	# Dry run if any additional argument passed
-	if [ -n "$1" ]
-	then
-		dry=true
-		_i "This is a dry run"
-	fi
-
-    clobber="true"
-    if [ -n "$2" ]
-    then
-        _i "This shall add to configuration instead of clobber it"
-        clobber=""
-    fi
+	(( DRY_RUN )) && _i "This is a dry run"
+	(( CLOBBER )) || _i "This shall add to configuration instead of clobber it"
 
 	_i "Installing configuration"
 	installConfig "${scriptDir}home" "$HOME"
@@ -120,30 +112,45 @@ function help {
 	Updates user config directory to be as per cloud config.
 
 	Usage: 
-	$0 <dry run> <clobber>
+	$0 [ -a -c -b ]
 
 	Args:
-	<dry run> when non empty (""), report changes only
-	<clobber> Clobber config unless not empty
+	-a dont dry run
+	-c clobber config dont update 
+	-b install scripts instead of config
 	eof
 }
 
 function installScripts {
-	if [[ ! -e ~/bin ]];then
-		mkdir ~/bin
+	if [[ ! -e ${HOME}/bin ]];then
+		mkdir ${HOME}/bin
 	fi
 	for s in "${scriptDir}"scripts/bin/*;do
-		if [[ -e ~/bin/"$(basename $s)" ]];then
-			rm ~/bin/"$(basename $s)"
+		if [[ -e ${HOME}/bin/"$(basename $s)" ]];then
+			rm ${HOME}/bin/"$(basename $s)"
 		fi
-		cp $s ~/bin/
+		cp $s ${HOME}/bin/
 	done
+	export PATH="${PATH}:${HOME}/bin"
 }
 
-if (($# == 0)) || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
-	help
-	return
-fi
+while getopts ":acb" opt;do
+	case $opt in
+		a )
+			DRY_RUN=0
+			;;
+		c )
+			CLOBBER=1
+			;;
+		b ) 
+			installScripts
+			exit $?
+			;;
 
+		* )
+			help
+			exit 1
+			;;
+	esac
+done
 run "$@"
-installScripts
