@@ -17,7 +17,6 @@ export QT4_IM_MODULE=ibus
 ibus-daemon -drx 
 # kimtoy ibus{,skk} ttf-mona{,po} ttf-ipa-mona otf-ipafont adobe-source-han-sans-{jp,otc}-fonts
 }
+
 hash ibus && configureEnvIbus
-
 xbindkeys # Daemon to watch key presses
-
