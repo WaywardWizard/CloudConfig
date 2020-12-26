@@ -54,7 +54,7 @@ function installConfig {
 		targetFile="${targetDir}$(basename $cfgFile)"
 
         # Remove target config file if clobber set
-        if [ $clobber = "true" -a -e "$targetFile" ]; then
+        if [ "$clobber" == "true" ] && [ -e "$targetFile" ]; then
             dryer "rm $targetFile"
         fi
 
