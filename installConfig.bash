@@ -54,7 +54,7 @@ function installConfig {
 		targetFile="${targetDir}$(basename $cfgFile)"
 
         # Remove target config file if clobber set
-        if [ "$clobber" == "true" ] && [ -e "$targetFile" ]; then
+        if [[ $clobber == "true" ]] && [[ -e "$targetFile" ]]; then
             dryer "rm $targetFile"
         fi
 
@@ -128,9 +128,22 @@ function help {
 	eof
 }
 
+function installScripts {
+	if [[ ! -e ~/bin ]];then
+		mkdir ~/bin
+	fi
+	for s in "${scriptDir}"scripts/bin/*;do
+		if [[ -e ~/bin/"$(basename $s)" ]];then
+			rm ~/bin/"$(basename $s)"
+		fi
+		cp $s ~/bin/
+	done
+}
+
 if (($# == 0)) || [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
 	help
 	return
 fi
 
 run "$@"
+installScripts

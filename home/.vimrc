@@ -28,9 +28,9 @@ set incsearch
 " Buffer 7 lines before scrolling text
 set so=7 
 set encoding=utf8
-set expandtab
-set smarttab
-set shiftwidth=4
+set expandtab 
+set smarttab 
+set shiftwidth=4 
 set tabstop=4
 
 set foldmethod=indent
