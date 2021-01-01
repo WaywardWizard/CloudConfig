@@ -21,6 +21,7 @@ export MANPAGER="nvimpager \
 +':nnoremap <buffer> q <C-w>b<Cmd>q<CR>' \
 +':nnoremap <buffer> Q <C-w>q<CR>'
 "
+export PAGER="$MANPAGER"
 
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=5000
