@@ -40,3 +40,6 @@ _lastCommandColourCoded() {
 
 alias phpx='XDEBUG_CONFIG="!" php'
 alias phpp='php -d xdebug.profiler_enable=1 '
+alias ncdu='ncdu --color=dark'
+alias du='cdu -i -dh'
+alias df='dfc -Td'
