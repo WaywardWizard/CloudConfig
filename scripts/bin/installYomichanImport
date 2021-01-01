@@ -1,0 +1,46 @@
+#!/bin/bash
+set -e
+url="https://foosoft.net/projects/yomichan-import/dl/yomichan-import_linux.tar.gz"
+installDir="${HOME}/.yomichan"
+formattedDictionaryPath="${installDir}/formattedDictionary"
+
+mkdir -p "$installDir"
+mkdir -p "$formattedDictionaryPath"
+dictionary="${HOME}/Japanese/jpdictionaries.tar.bz2"
+
+
+declare -A dictionaries
+dictionaries["kojien"]="広辞苑第六版•付属資料"
+dictionaries["daijirin"]="三省堂•スーパー大辞林"
+dictionaries["daijisen"]="大辞泉"
+dictionaries["kotowaza"]="故事ことわざの辞典"
+dictionaries["meikyou"]="明鏡国語辞典"
+dictionaries["kenkyusha"]="研究社•新和英大辞典•第５版"
+
+pd="$(pwd)"
+cd "$installDir" || return
+
+echo "Getting yomichan-import"
+curl "$url" | tar -x -z -f -  
+
+echo "Extracting dictionaries from $dictionary"
+tar xjf "$dictionary"
+
+yi="$(find "$(pwd)" -iname yomichan-import -type f -executable)"
+echo "Found yomichan import executable $yi"
+
+
+for d in "${!dictionaries[@]}"; do
+    echo "Finding $d"
+    path=$(find "$(pwd)" -ipath "*$d*" -iname CATALOGS)
+    echo $path
+    if [ -f "$path" ]; then
+        echo "Formatting ${dictionaries[$d]}"
+        _pd="$(pwd)"
+        cd "$(dirname $yi)" # We need to run yomichan-import from the directiory its binary is in
+        $yi -format epwing -language "Japanese" -title "${dictionaries[$d]}" "$path" "${formattedDictionaryPath%/}/$d" 
+        cd "$_pd"
+    fi
+done
+
+cd "$pd" || return
