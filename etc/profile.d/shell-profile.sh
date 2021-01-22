@@ -27,7 +27,7 @@ export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=5000
 export HISTIGNORE=""
 
-shopt -s cdspell autocd direxpand dirspell dotglob histappend cdable_vars expand_aliases no_empty_cmd_completion 
+shopt -s cdspell autocd direxpand dirspell histappend cdable_vars expand_aliases no_empty_cmd_completion 
 
 # use \{diff, grep, ls, ..} to get non aliased cmd when piping to files for text processing (when you dont want cntrl chars)
 alias diff='diff --color=auto'
