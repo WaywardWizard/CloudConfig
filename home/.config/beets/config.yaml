@@ -1,0 +1,47 @@
+directory: /mnt/4tb/music2021
+plugins:
+  - chroma
+  - discogs
+  - fromfilename
+  - inline
+  - rewrite
+  - the
+ignore_hidden: yes
+threaded: yes
+original_date: yes
+va_name: Various Artists
+
+#ui
+ui:
+  color: yes
+
+import:
+  #move: yes
+  write: no
+  hardlink: yes
+  incremental: yes
+  incremental_skip_later: no
+  group_albums: no
+  autotag: yes
+  duplicate_actions: ask
+  bell: yes
+
+match:
+  max_rec:
+    missing_tracks: medium
+    unmatched_tracks: medium
+  ignored:
+    - missing_tracks
+    - unmatched_tracks
+
+paths:
+  default: Artists/%the{$albumartist}/$album%aunique{} ($year)/$track $title
+  singleton: Non-Album/%the{$artist}/$title
+  comp: Compilations/$album%aunique{}/$track $title
+  albumtype:soundtrack: Soundtracks/$album/$track/$title
+
+discogs:
+  user_token: 'GKpFLeJTheuJDTDAwLcLkbpZQFialRsTRqabsQfQ'
+
+chroma:
+  auto: no
