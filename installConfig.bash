@@ -36,10 +36,13 @@ function quietDryer {
 #
 # $1 - absolute source directory 
 # $2 - absolute target directory
+# $3 - owner of file in target location. Default to calling user
 function installConfig {
 
 	([ ${1#/} != $1 ] && [ ! -z $1 ]) || (_f "installConfig: Must get absolute source - got $1" && exit);
 	([ ${2#/} != $2 ] && [ ! -z $2 ]) || (_f "installConfig: Must get absolute target - got $2" && exit);
+	selectedUser=${3:-$USER}
+
 	targetDir="${2%/}/"
 	sourceDir="${1%/}/"
 
@@ -48,7 +51,7 @@ function installConfig {
 	_i "Transferring configuration from $sourceDir to $targetDir"
 
 	# Process configuration files in source folder. 
-	for cfgFile in $(find -L ${sourceDir} -maxdepth 1 -type f)
+	for cfgFile in $(find -L ${sourceDir} -maxdepth 1 \( -type f -o -xtype l \) )
 	do
 
 		_i "Processing configuration file $cfgFile"
@@ -56,14 +59,14 @@ function installConfig {
 		targetFile="${targetDir}$(basename $cfgFile)"
 
         # Remove target config file if clobber set
-	if (( CLOBBER )) && [[ -e "$targetFile" ]]; then
-            dryer "rm $targetFile"
+	    if (( CLOBBER )) && [[ -e "$targetFile" ]]; then
+            dryer "sudo rm $targetFile"
         fi
 
 		if ! [ -a "$targetFile" ]
 		then
 			_i "Creating config file $targetFile"
-			quietDryer touch "$targetFile"
+			quietDryer sudo -u $selectedUser touch "$targetFile"
         fi
 
         # Add missing configuration lines to srcCfgFilename. -r will ignore backslashes (making text literal) 
@@ -73,12 +76,12 @@ function installConfig {
 		do
 			if [[ ! "$line" =~ ^\ *$ ]] # Silence empty lines
 			then
-				(dryer tee -a "$targetFile")<<<"$line"
+				(dryer sudo -u $selectedUser tee -a "$targetFile")<<<"$line"
 			else
-                (quietDryer tee -a "$targetFile")<<<"$line"
+                (quietDryer sudo -u $selectedUser tee -a "$targetFile")<<<"$line"
 			fi
 
-		done <<<"$(diff --changed-group-format='%<' --unchanged-group-format='' $cfgFile $targetFile )"
+		done <<<"$(sudo -u $selectedUser diff --changed-group-format='%<' --unchanged-group-format='' $cfgFile $targetFile )"
         IFS=$IFS_OLD
         # No expansion post substitution. 
 
@@ -90,7 +93,7 @@ function installConfig {
         _i "Processing configuration folder '$cfgFolder'"
         targetFolder="$2/$(basename $cfgFolder)"
         if [ ! -e "$targetFolder" ]; then dryer mkdir $targetFolder;fi
-        installConfig "$cfgFolder" "$targetFolder" #Recurse
+        installConfig "$cfgFolder" "$targetFolder" $3 #Recurse
     done
 }
 
@@ -102,8 +105,8 @@ function run {
 
 	_i "Installing configuration"
 	installConfig "${scriptDir}home" "$HOME"
-	installConfig "${scriptDir}etc" "/etc"
-	installConfig "${scriptDir}home-root" "/root"
+	installConfig "${scriptDir}etc" "/etc" root
+	installConfig "${scriptDir}home-root" "/root" root
 	_i "Done..."
 }
 
@@ -112,12 +115,13 @@ function help {
 	Updates user config directory to be as per cloud config.
 
 	Usage: 
-	$0 [ -a -c -b ]
+	$0 [ -a -c -b -i ]
 
 	Args:
 	-a dont dry run
 	-c clobber config dont update 
-	-b install scripts instead of config
+	-b install scripts
+	-i install config
 	eof
 }
 
@@ -129,12 +133,25 @@ function installScripts {
 		if [[ -e ${HOME}/bin/"$(basename $s)" ]];then
 			rm ${HOME}/bin/"$(basename $s)"
 		fi
-		cp $s ${HOME}/bin/
+		ln -s $s ${HOME}/bin/
 	done
-	export PATH="${PATH}:${HOME}/bin"
+
+    _addPath "${HOME}/bin"
+    export PATH
+
 }
 
-while getopts ":acb" opt;do
+function _addPath() {
+    IFS=: read -r -a line <<< $PATH 
+    for path in ${line[@]};do
+        if [[ $path == $1 ]];then
+            return 1
+        fi
+    done
+    PATH="$PATH:$1"
+}
+
+while getopts ":acbi" opt;do
 	case $opt in
 		a )
 			DRY_RUN=0
@@ -142,15 +159,23 @@ while getopts ":acb" opt;do
 		c )
 			CLOBBER=1
 			;;
-		b ) 
+		s ) 
 			installScripts
 			exit $?
 			;;
-
+		i ) 
+		    run "$@"
+		    exit $?
+		    ;;
 		* )
 			help
 			exit 1
 			;;
 	esac
 done
-run "$@"
+
+# When no options given
+if [[ $OPTIND==0 ]];then
+    help
+    exit 1
+fi
