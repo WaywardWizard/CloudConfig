@@ -1,0 +1,11 @@
+# This chip is found on Gigabyte GA-H67MA-USB3
+# Adapted from source: https://lm-sensors.lm-sensors.narkive.com/wCAE0nEQ/sensors3-conf-settings-for-it8728f-ga-h67ma-ud2h
+
+chip "it8728-*"
+
+label fan1 "CPU fan"
+label fan2 "System fan"
+
+label temp1 "Platform controller hub temp"
+label temp2 "CPU temp"
+ignore temp3 "System temp"
