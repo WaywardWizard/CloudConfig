@@ -1,0 +1,6 @@
+[Unit]
+Description=Run conky daemon to display system info on desktop
+
+[Service]
+ExecStart=/usr/bin/conky
+
